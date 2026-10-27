@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <title>DA_TOOLS</title>
+  <style>
+    :root { color-scheme: dark; --bg:#111; --panel:#191919; --line:#2b2b2b; --text:#f3f3f3; --muted:#929292; --accent:#fff; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:var(--bg); color:var(--text); font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .wrap { width:min(760px,calc(100% - 36px)); margin:0 auto; padding:78px 0 32px; }
+    header { text-align:center; margin-bottom:56px; }
+    h1 { margin:0; font-size:clamp(36px,8vw,56px); font-weight:800; letter-spacing:.12em; }
+    .subtitle { margin:12px 0 0; color:var(--muted); font-size:14px; }
+    .tools-head { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:14px; }
+    .tools-head h2 { margin:0; font-size:13px; text-transform:uppercase; letter-spacing:.12em; font-weight:650; color:#c9c9c9; }
+    .search { width:220px; max-width:60%; background:#171717; border:1px solid var(--line); border-radius:8px; color:var(--text); padding:10px 12px; font:inherit; font-size:13px; outline:none; }
+    .search:focus { border-color:#666; }
+    .list { border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--panel); }
+    .item { display:flex; align-items:center; gap:14px; padding:19px 20px; border-bottom:1px solid var(--line); }
+    .item:last-child { border-bottom:0; }
+    .num { color:#666; font-size:12px; width:22px; flex:none; font-variant-numeric:tabular-nums; }
+    .details { flex:1; min-width:0; }
+    .name { font-size:15px; font-weight:650; margin:0 0 5px; }
+    .file { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+    .tag { color:#999; border:1px solid #353535; border-radius:5px; padding:4px 7px; font-size:10px; white-space:nowrap; }
+    .download { text-decoration:none; color:#111; background:#f1f1f1; border-radius:7px; padding:9px 12px; font-size:12px; font-weight:700; white-space:nowrap; transition:background .15s; }
+    .download:hover { background:#ccc; }
+    .download:focus-visible { outline:2px solid white; outline-offset:3px; }
+    .empty { display:none; padding:24px; text-align:center; border:1px solid var(--line); border-radius:10px; color:var(--muted); font-size:13px; }
+    footer { margin-top:26px; text-align:center; color:#666; font-size:11px; }
+    @media(max-width:540px) {
+      .wrap { padding-top:54px; }
+      header { margin-bottom:40px; }
+      .item { padding:16px 13px; gap:10px; }
+      .tag { display:none; }
+      .download { padding:9px 10px; }
+      .name { font-size:14px; }
+      .file { font-size:11px; }
+      .search { width:170px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>DA_TOOLS</h1>
+    </header>
+
+    <section aria-label="Lista programów">
+      <div class="tools-head">
+        <h2>Programy <span id="count" style="color:#777;font-weight:400">· 4</span></h2>
+        <input class="search" id="search" type="search" placeholder="Szukaj..." aria-label="Szukaj programu">
+      </div>
+
+      <div class="list" id="list">
+        <article class="item" data-search="plb windows bat">
+          <span class="num">01</span>
+          <div class="details"><p class="name">PLB</p><span class="file">PLB.bat</span></div>
+          <span class="tag">BAT</span>
+          <a class="download" href="https://github.com/dandihandi/PLB/releases/download/v1.0/PLB.bat" download>Pobierz ↓</a>
+        </article>
+        <article class="item" data-search="generator stopek stopki html email">
+          <span class="num">02</span>
+          <div class="details"><p class="name">Generator Stopek</p><span class="file">Generator_Stopek.html</span></div>
+          <span class="tag">HTML</span>
+          <a class="download" href="https://github.com/dandihandi/generatorstopek/releases/download/v1.0/Generator_Stopek.html" download>Pobierz ↓</a>
+        </article>
+        <article class="item" data-search="imap backuper backup zip email">
+          <span class="num">03</span>
+          <div class="details"><p class="name">IMAP BACKUPER</p><span class="file">IMAP_BACKUPER.zip</span></div>
+          <span class="tag">ZIP</span>
+          <a class="download" href="https://github.com/dandihandi/IMAP_BACKUPER/releases/download/v1.0/IMAP_BACKUPER.zip" download>Pobierz ↓</a>
+        </article>
+        <article class="item" data-search="cardgeneratormaster card generator karty exe windows">
+          <span class="num">04</span>
+          <div class="details"><p class="name">CardGeneratorMaster</p><span class="file">CardGeneratorMaster.exe</span></div>
+          <span class="tag">EXE</span>
+          <a class="download" href="https://github.com/dandihandi/CardGeneratorMaster/releases/download/v.2.0/CardGeneratorMaster.exe" download>Pobierz ↓</a>
+        </article>
+      </div>
+      <div class="empty" id="empty">Nie znaleziono programu.</div>
+    </section>
+    <footer>DA_TOOLS · Pliki pobierane bezpośrednio z GitHub Releases</footer>
+  </main>
+  <script>
+    const search = document.getElementById('search');
+    const items = [...document.querySelectorAll('.item')];
+    const count = document.getElementById('count');
+    const empty = document.getElementById('empty');
+    search.addEventListener('input', () => {
+      const q = search.value.trim().toLocaleLowerCase('pl');
+      let n = 0;
+      items.forEach(item => {
+        const show = (item.innerText + ' ' + item.dataset.search).toLocaleLowerCase('pl').includes(q);
+        item.hidden = !show;
+        if (show) n++;
+      });
+      count.textContent = '· ' + n;
+      empty.style.display = n ? 'none' : 'block';
+    });
+  </script>
+</body>
+</html>
